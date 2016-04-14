@@ -1,8 +1,6 @@
 # vic - vi c(s)implified
 
 
-##a plain text editor imitating minimal functions of vi
+##a plain text editor with Windows notepad style.
 
-###designed to perform under both POSIX OS and MS Windows.
-
-###also not designed for size lower than 24 * 80.
+##designed to perform under the dosbox specified in ZJU.
