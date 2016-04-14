@@ -1,0 +1,36 @@
+先学习这几个函数：
+kbhit   //use getch to substitute it.
+initgraph
+
+操纵鼠标：
+鼠标和键盘是否共用同一个函数操作？   //no
+鼠标的坐标怎么表示的？
+DOS下面的默认分辨率为80*25
+
+设置中断向量来搞鼠标事件吧   //use teacher's origin code.
+
+先实现键盘的东西    //finished.
+搞清楚如何读取组合键 Ctrl+C 这样的   //that's easy.
+
+第一步，先写出正确的makefile并且编译通过
+finished.
+
+2nd, finish the drawing part.
+
+figure out the solution of graphics mode.
+both graphics and text.
+
+we could put off the implements of highlighting, focus on mouse function first.
+READ THE F**K SOURCE CODE!
+
+no textattr are provided, we may need to use asm inline to set text color.
+no need. C code can control video memory.
+
+not knowing the basics of DOS4GW, it's hard to use asm, as I don't know if it's real mode or protected mode.
+
+issues:
+C-X exiting on changed file results in illegal read CS:IP
+
+using the switch stack code provided by black white
+now crash on mouse_up
+figuring out the reason of it and the logic of switching

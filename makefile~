@@ -1,0 +1,2 @@
+viwc.exe : bottomline_loop.c draw_ui.c file_sl.c file_struct.c highlight.c insert_loop.c log_module.c main.c main_loop.c normal_loop.c termios_set.c
+	wcl386 /fe=compute.exe mouse.c picture.c util.c compute.c

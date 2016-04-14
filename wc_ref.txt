@@ -1,0 +1,137 @@
+调用鼠标功能中断INT 33H
+编程原理：
+    调用鼠标功能中断INT 33H，所以需要包含 dos.h 头文件。
+    自定义一个函数mouse()用来调用中断，中断的入口参数和出口参数我们用寄存器变量inregs, outregs表示。
+    void mouse(int *m1, int *m2, int *m3, int *m4)
+    {
+    union REGS inregs, outregs;
+
+    inregs.x.ax = *m1;
+    inregs.x.bx = *m2;
+    inregs.x.cx = *m3;
+    inregs.x.dx = *m4;
+    int86(0x33, &inregs ,&outregs);
+    *m1 = outregs.x.ax;
+    *m2 = outregs.x.bx;
+    *m3 = outregs.x.cx;
+    *m4 = outregs.x.dx;
+    }
+
+    鼠标功能中断INT 33H的使用说明:
+    00H — 初始化鼠标 01H — 显示鼠标指针02H — 隐藏鼠标指针 03H — 读取鼠标位置及按钮状态 04H — 设置鼠标指
+    针位置 05H — 读取鼠标按键信息 06H — 读取鼠标按钮释放息 07H — 设置鼠标水平边界 08H — 设置鼠标垂直边界
+    09H —     设置图形鼠标形状 0AH 置本文鼠标形状 0BH — 读取鼠标移动计数
+    (1)、功能00H
+    功能描述： 初始化鼠标，该操作只需要执行一次 
+    入口参数： AX＝00H 
+    出口参数： AX＝0000H——不支持鼠标功能，FFFFH——支持鼠标功能
+    BX＝鼠标按钮个数(在支持鼠标功能时)
+    在支持鼠标功能的情况下，鼠标还被设置如下参数： 1、鼠标指针放在屏幕中央
+    2、如果当前鼠标指针是显示的，则操作后，鼠标指针被隐藏
+    3、鼠标指针的显示页为0
+    4、根据屏幕的显示模式显示鼠标指针：文本—反向显示矩形块，图形—尖头形状
+    5、水平象素比＝8:8，垂直象素比＝16:8
+    6、设置水平和垂直的显示边界为当前显示模式的最大边界
+    7、允许光笔仿真
+    8、双速门槛值＝64
+    (2)、功能01H
+    功能描述： 显示鼠标指针，通常在鼠标初始化后，用此功能显示其指针 
+    入口参数： AX＝01H 
+    出口参数： 无 
+    (3)、功能02H
+    功能描述： 隐藏鼠标指针，一般在程序结束时，调用此功能 
+    入口参数： AX＝02H 
+    出口参数： 无 
+    (4)、功能03H
+    功能描述： 读取鼠标位置及其按钮状态 
+    入口参数： AX＝03H 
+    出口参数： BX＝按键状态 
+    位0=1——按下左键，位1=1——按下右键，位2=1——按下中键， 其它位——保留，内部使用
+    CX＝水平位置 
+    DX＝垂直位置 
+    (5)、功能04H
+    功能描述： 设置鼠标指针位置 
+    入口参数： AX＝04H，CX＝水平位置，DX＝垂直位置 
+    出口参数： 无 
+    (6)、功能05H
+    功能描述： 读取鼠标按键信息 
+    入口参数： AX＝05H，BX＝指定的按键：0—左键，1—右键，2—中键 
+    出口参数： AX＝按键状态，参见功能3H中BX的说明
+    BX＝按键次数，CX＝水平位置(最后按键时)，DX＝垂直位置(最后按键时) 
+    (7)、功能06H
+    功能描述： 读取鼠标按钮释放信息 
+    入口参数： AX＝06H，BX＝指定的按键：0—左键，1—右键，2—中键 
+    出口参数： AX＝按键状态，参见功能3H中BX的说明
+    BX＝释放的次数，CX＝水平位置(最后释放时)，DX＝垂直位置(最后释放时) 
+    (8)、功能07H
+    功能描述： 设置鼠标水平边界 
+    入口参数： AX＝07H，CX＝最小水平位置，DX＝最大水平位置 
+    出口参数： 无，鼠标有可能因新区域变小而自动移进新区域内 
+    (9)、功能08H
+    功能描述： 设置鼠标垂直边界 
+    入口参数： AX＝08H，CX＝最小垂直位置，DX＝最大垂直位置 
+    出口参数： 无，鼠标有可能因新区域变小而自动移进新区域内 
+    (10)、功能09H
+    功能描述： 设置图形鼠标形状 
+    入口参数： AX＝09H，BX＝指针的水平位置，CX＝指针的垂直位置
+    ESX＝16×16位光标的映象地址参数说明： (BX，CX)是鼠标的指针在16×16点阵中的位置，(0,0)是左上角；
+    ESX指向的存储单元内存放16×16点阵的位映象隐码，紧跟其后的是16×16点阵的光标掩码。 
+    鼠标指针的显示方法： 位映象隐码“逻辑与”上屏幕显示区的内容，然后再用光标掩码内容“异或”前面运算的结果。 
+    出口参数： 无
+
+    我们可以在mouse()的基础上编写自己的鼠标处理程序。这里先定义一些宏。
+    #define RESET_MOUSE 0x00
+    #define SHOW_MOUSE 0x01
+    #define LEFT_BUTTON 0
+    #define RIGHT_BUTTON 1
+    #define EITHER_BUTTON 2
+    #define CHECK_BUTTON_PRESSED 0x05
+
+    int resetmouse(void)
+    {
+    int m1, m2, m3, m4;
+
+    m1 = RESET_MOUSE;
+    mouse(&m1, &m2, &m3, &m4);
+
+    return(m1);
+    }
+
+    void showmouse(void)
+    {
+    int m1, m2, m3, m4;
+
+    m1 = SHOW_MOUSE;
+    mouse(&m1, &m2, &m3, &m4); 
+    }
+
+    int testbutton(int testtype, int whichbutton)
+    {
+        int m1, m2, m3, m4;
+
+        m1 = testtype;
+        if (whichbutton == LEFT_BUTTON || whichbutton == EITHER_BUTTON)
+        {
+            m2 = LEFT_BUTTON;
+            mouse(&m1, &m2, &m3, &m4);
+            if (m2) return 1; 
+        }
+        if (whichbutton == RIGHT_BUTTON || whichbutton == EITHER_BUTTON)
+        {
+            m2 = RIGHT_BUTTON;
+            mouse(&m1, &m2, &m3, &m4);
+            if (m2) return 1; 
+        } 
+        return 0;
+    }
+
+    int left_pressed(void)
+    {
+        return(testbutton(CHECK_BUTTON_PRESSED, LEFT_BUTTON)); 
+    }
+
+
+注意：
+    (1) 在DOS、win98下需确保已经装载了mouse.sys，或已运行了mouse.com。
+    (2) 用TC2.0在win2k、winxp下不会显示鼠标，但鼠标确实存在，你可以得到它的位置和事件。要想显示，只有自己绘图
+        了。

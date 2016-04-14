@@ -1,0 +1,6 @@
+*.obj
+*.exe
+*.err
+*.xlsx
+*.doc
+.idea/

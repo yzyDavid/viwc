@@ -1,0 +1,2 @@
+t.exe : t.c
+	wcl386 /fe=t.exe t.c
